@@ -3,563 +3,193 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Team-Facing Claude Agent Fleet — Architecture & Setup Guide</title>
-  <style>
-    :root {
-      --bg: #fafaf7;
-      --fg: #1a1a1a;
-      --muted: #6b6b66;
-      --accent: #c2410c;
-      --accent-bg: #fef3eb;
-      --border: #e5e5dc;
-      --code-bg: #f3f3ee;
-      --warn-bg: #fef8e6;
-      --warn-border: #d4b96e;
-      --ok-bg: #ebf5ec;
-      --ok-border: #7da882;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--fg);
-      max-width: 880px;
-      margin: 0 auto;
-      padding: 3rem 1.5rem 5rem;
-      line-height: 1.55;
-      font-size: 16px;
-    }
-    h1 {
-      font-size: 2.25rem;
-      line-height: 1.15;
-      margin: 0 0 0.5rem;
-      letter-spacing: -0.02em;
-    }
-    h2 {
-      font-size: 1.5rem;
-      margin: 2.5rem 0 0.75rem;
-      padding-bottom: 0.4rem;
-      border-bottom: 1px solid var(--border);
-      letter-spacing: -0.01em;
-    }
-    h3 {
-      font-size: 1.15rem;
-      margin: 1.75rem 0 0.5rem;
-      color: var(--accent);
-    }
-    h4 {
-      font-size: 1rem;
-      margin: 1.25rem 0 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    p { margin: 0.6rem 0 0.8rem; }
-    .subtitle {
-      color: var(--muted);
-      font-size: 1.05rem;
-      margin: 0 0 2rem;
-    }
-    code {
-      font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-      font-size: 0.92em;
-      background: var(--code-bg);
-      padding: 0.1em 0.35em;
-      border-radius: 3px;
-    }
-    pre {
-      background: var(--code-bg);
-      padding: 1rem;
-      border-radius: 6px;
-      overflow-x: auto;
-      font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      border: 1px solid var(--border);
-    }
-    pre code { background: transparent; padding: 0; }
-    a { color: var(--accent); }
-    blockquote {
-      margin: 1rem 0;
-      padding: 0.6rem 1rem;
-      border-left: 3px solid var(--accent);
-      background: var(--accent-bg);
-      color: var(--fg);
-    }
-    .callout {
-      margin: 1.2rem 0;
-      padding: 0.75rem 1rem;
-      border-left: 3px solid;
-      border-radius: 0 4px 4px 0;
-    }
-    .callout.warn {
-      border-color: var(--warn-border);
-      background: var(--warn-bg);
-    }
-    .callout.ok {
-      border-color: var(--ok-border);
-      background: var(--ok-bg);
-    }
-    .callout strong { display: block; margin-bottom: 0.3rem; }
-    table {
-      border-collapse: collapse;
-      margin: 1rem 0;
-      width: 100%;
-    }
-    th, td {
-      text-align: left;
-      padding: 0.5rem 0.8rem;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-    }
-    ul, ol { padding-left: 1.5rem; }
-    li { margin: 0.3rem 0; }
-    nav.toc {
-      background: #fff;
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 1rem 1.25rem;
-      margin: 1.5rem 0 2.5rem;
-    }
-    nav.toc h4 { margin-top: 0; }
-    nav.toc ol { margin: 0; padding-left: 1.25rem; }
-    nav.toc li { margin: 0.2rem 0; }
-    .footer {
-      margin-top: 4rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 0.85rem;
-    }
-    .ascii-diagram {
-      background: #fff;
-      border: 1px solid var(--border);
-      padding: 1rem 1.2rem;
-      font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
-      font-size: 0.82rem;
-      line-height: 1.45;
-      white-space: pre;
-      overflow-x: auto;
-      border-radius: 6px;
-    }
-  </style>
+  <title>Team Agent Fleet — Executive Overview</title>
+  <link rel="stylesheet" href="assets/styles.css">
 </head>
 <body>
 
-<h1>Team-Facing Claude Agent Fleet</h1>
-<p class="subtitle">A practical guide to spinning up a fleet of team-facing Claude Code agents (Analytics, CMO, CFO, CPO, etc.) on a dedicated Mac mini host, separate from your personal machine.</p>
+<header class="site">
+  <h1>Team Agent Fleet</h1>
+  <p class="tagline">A team-facing AI assistant for every function — Analytics, CMO, CFO, CPO — on a dedicated host you own.</p>
+  <nav class="tabs">
+    <a href="index.html" class="current">Executive overview</a>
+    <a href="detail.html">Build guide</a>
+  </nav>
+</header>
 
-<nav class="toc">
-  <h4>Contents</h4>
-  <ol>
-    <li><a href="#why">Why a separate host</a></li>
-    <li><a href="#architecture">The architecture</a></li>
-    <li><a href="#hardware">Choosing a Mac mini</a></li>
-    <li><a href="#prereqs">First-boot prerequisites</a></li>
-    <li><a href="#fleet-state">The fleet state directory layout</a></li>
-    <li><a href="#anatomy">Anatomy of a single persona</a></li>
-    <li><a href="#slack-bootstrap">Slack app bootstrap (script-driven)</a></li>
-    <li><a href="#dispatcher">The non-LLM router daemon pattern</a></li>
-    <li><a href="#permissions">Permissions and security model</a></li>
-    <li><a href="#operations">Operations: starting, stopping, observing</a></li>
-    <li><a href="#failure-modes">Common failure modes</a></li>
-    <li><a href="#adding-personas">Recipe: adding a new persona in 30 minutes</a></li>
-  </ol>
-</nav>
+<h2>The picture</h2>
 
-<h2 id="why">Why a separate host</h2>
+<p>Each team function gets its own AI agent identity in Slack. Anyone on the team can DM <code>@BVG Agent - CMO</code> with a marketing question; the agent answers in their DM, with full access to the relevant data and tools. The fleet runs 24/7 on a dedicated Mac mini, separate from anyone's laptop.</p>
 
-<p>The personal-machine fleet works for one operator, but breaks for team-facing agents:</p>
-
-<ul>
-  <li><strong>Resource contention.</strong> Each LLM session pins ~1–2 GB of RAM. Six personas plus per-user DM workers under each is 12+ sessions. A laptop running 12 tmux sessions of Claude Code is slow at the day job.</li>
-  <li><strong>Sleep / lid-close kills the fleet.</strong> A team can't have their bots disappear when you close your laptop.</li>
-  <li><strong>Personal config bleed.</strong> Your <code>~/.claude/settings.json</code>, your model defaults, your <code>~/.zshrc</code> — these are <em>your</em> workspace. The fleet host needs to be its own identity.</li>
-  <li><strong>Audit clarity.</strong> Slack messages from "stojan's mac" vs "team-fleet host" tell different stories to compliance reviewers.</li>
-</ul>
-
-<p>The cleanest pattern: a dedicated Mac mini (or Studio) wired to power + Ethernet, running the fleet 24/7. Your laptop stays free for the day job. You SSH into the fleet host (via Tailscale or VPN) to attach to sessions and observe.</p>
-
-<h2 id="architecture">The architecture</h2>
-
-<p>Each team-facing persona is a <em>three-tier system</em>:</p>
-
-<div class="ascii-diagram">
-                    ┌───────────────────────┐
-                    │  Slack workspace      │
-                    │  (or Telegram group)  │
-                    └─────────┬─────────────┘
-                              │ events / DMs
-                              ▼
-              ┌───────────────────────────────────┐
-              │  Tier 1: Slack-side bot           │
-              │  (slack-fork plugin holds socket) │
-              │  • Receives events                │
-              │  • Writes to inbound-queue        │
-              │  • Posts replies via chat.post    │
-              └─────────┬─────────────────────────┘
-                        │ queue file
-                        ▼
-              ┌───────────────────────────────────┐
-              │  Tier 2: Non-LLM router daemon    │
-              │  (analytics-router.ts pattern)    │
-              │  • Reads dm-users.json registry   │
-              │  • Forwards to user's worker      │
-              │  • Relays worker replies          │
-              │  • Deterministic, can't go rogue  │
-              └─────────┬─────────────────────────┘
-                        │ local-handoff inbox
-                        ▼
-              ┌───────────────────────────────────┐
-              │  Tier 3: Per-user LLM worker      │
-              │  (claude --continue per Slack ID) │
-              │  • The actual conversation        │
-              │  • Has tools, knowledge access    │
-              │  • One session per allowed user   │
-              └───────────────────────────────────┘
+<div class="stats">
+  <div class="stat">
+    <div class="value">6–10</div>
+    <div class="label">Personas on one host</div>
+  </div>
+  <div class="stat">
+    <div class="value">$600–1500</div>
+    <div class="label">Hardware cost (one-time)</div>
+  </div>
+  <div class="stat">
+    <div class="value">~30 min</div>
+    <div class="label">Per new persona</div>
+  </div>
+  <div class="stat">
+    <div class="value">24/7</div>
+    <div class="label">Availability target</div>
+  </div>
 </div>
 
-<p>Tiers 1 + 3 are the obvious bits. Tier 2 is the load-bearing part that beginners skip and then regret: <strong>without a non-LLM router between the Slack-side and the per-user workers, the LLM "router" keeps answering questions itself instead of forwarding — because it has the tools, and the prompt isn't strong enough to enforce the boundary.</strong></p>
+<h2>Rollout phases</h2>
+
+<p>From "we have an idea" to "the team is using it every day" in four phases. Each phase ends with a checkpoint where you can decide whether to continue.</p>
+
+<div class="phases">
+  <div class="phase p1">
+    <div class="phase-num">Phase 1</div>
+    <h4>Foundation</h4>
+    <p>Provision the dedicated host. Install runtime (bun, tmux, Claude Code). Set up Tailscale for remote SSH access. Configure macOS to never sleep.</p>
+    <div class="duration">~2 hours · one-time</div>
+  </div>
+  <div class="phase p2">
+    <div class="phase-num">Phase 2</div>
+    <h4>First persona</h4>
+    <p>Ship one persona end-to-end (typically Analytics, since it has the clearest scope). Register the Slack app, wire up the router daemon, prove DM routing works for one user.</p>
+    <div class="duration">~4 hours · one-time</div>
+  </div>
+  <div class="phase p3">
+    <div class="phase-num">Phase 3</div>
+    <h4>Expand allowlist</h4>
+    <p>Add team members to the first persona's allowlist. Each user gets their own conversation context via per-user worker sessions. Tune the prompt based on real questions.</p>
+    <div class="duration">~30 min · ongoing</div>
+  </div>
+  <div class="phase p4">
+    <div class="phase-num">Phase 4</div>
+    <h4>Add personas</h4>
+    <p>Once the analytics flow proves itself, spin up CMO, CFO, CPO, etc. Each follows the same recipe in ~30 minutes — Slack app bootstrap, state dir, router daemon, prompts.</p>
+    <div class="duration">~30 min per persona</div>
+  </div>
+</div>
+
+<h2>How a single persona works</h2>
+
+<p>Three tiers, each doing one job. Information flows top-to-bottom on inbound, bottom-to-top on reply.</p>
+
+<div class="tiers">
+  <div class="tier t1">
+    <div class="tier-label">Tier 1 · Slack connection</div>
+    <h3>The bot's socket to Slack</h3>
+    <p>Holds the persistent WebSocket to Slack. Receives every event (DMs, mentions, reactions). Posts replies via Slack's API. Doesn't decide anything on its own — just routes inbound to Tier 2 and outbound to Slack.</p>
+  </div>
+
+  <div class="flow-arrow">↓ inbound&nbsp;&nbsp;&nbsp;&nbsp;↑ reply</div>
+
+  <div class="tier t2">
+    <div class="tier-label">Tier 2 · Non-LLM router</div>
+    <h3>Deterministic dispatcher</h3>
+    <p>A small TypeScript daemon, no LLM. For each inbound message:</p>
+    <ul>
+      <li>Checks the per-user allowlist</li>
+      <li>Authorized → forwards to that user's dedicated worker</li>
+      <li>Not authorized → posts "Not authorized yet" + an eyes reaction</li>
+    </ul>
+    <p>For each worker reply: posts to the right DM channel, threaded correctly. Can't go rogue because it has no model to second-guess the routing.</p>
+  </div>
+
+  <div class="flow-arrow">↓ forward&nbsp;&nbsp;&nbsp;&nbsp;↑ reply</div>
+
+  <div class="tier t3">
+    <div class="tier-label">Tier 3 · Per-user workers</div>
+    <h3>The actual conversation</h3>
+    <p>One Claude Code session per allowlisted user. This is where the work happens — answering questions, running queries, drafting documents. Each user has their own conversation context (preserved across days), their own scratch directory, their own model choice. Cleanly isolated from other users' conversations.</p>
+  </div>
+</div>
 
 <div class="callout warn">
-  <strong>Lesson from the field</strong>
-  We initially built the analytics agent with an LLM as the router (since it already had <code>mcp__slack__reply</code>). It worked for one user, but as soon as we wired in per-user workers, the LLM router kept choosing the path of least resistance — calling <code>mcp__slack__reply</code> directly instead of forwarding to the user's worker. Prompt-only enforcement failed; we had to replace it with a non-LLM daemon. Don't skip Tier 2.
+  <strong>Why the middle tier?</strong>
+  Tempting to skip Tier 2 and let an LLM handle routing directly — it already has the tools, just tell it "forward to the right worker." This doesn't work in practice: the LLM keeps choosing the path of least resistance and answers questions itself instead of forwarding. The non-LLM router is the load-bearing architectural choice. <a href="detail.html#dispatcher">Details in the build guide →</a>
 </div>
 
-<h2 id="hardware">Choosing a Mac mini</h2>
+<h2>Why a dedicated host</h2>
 
-<p>Recommended starting spec:</p>
+<p>The fleet doesn't run on your laptop. Four reasons:</p>
 
 <table>
-  <tr><th>Component</th><th>Recommended</th><th>Notes</th></tr>
-  <tr><td>Model</td><td>Mac mini M4 (base or Pro)</td><td>M-series chips run multiple Claude sessions cleanly. Avoid Intel minis.</td></tr>
-  <tr><td>RAM</td><td>16 GB minimum, 24+ GB ideal</td><td>Each LLM session is ~1–2 GB. Fleet of 6 personas + 5–10 workers each = comfortable in 24 GB.</td></tr>
-  <tr><td>Storage</td><td>512 GB SSD minimum</td><td>Claude session JSONLs accumulate. Log rotation helps but headroom is cheap.</td></tr>
-  <tr><td>Network</td><td>Ethernet preferred</td><td>Wi-Fi works but adds reconnect latency.</td></tr>
-  <tr><td>Cost</td><td>$600 used / $799 new (base)</td><td>Pro is $1399. Base M4 is enough for a 6-persona fleet.</td></tr>
-</table>
-
-<p>The host doesn't need a monitor — once configured, you SSH in. Tailscale (free for personal use) is the simplest way to reach it from anywhere without exposing it to the public internet.</p>
-
-<h2 id="prereqs">First-boot prerequisites</h2>
-
-<p>On the fresh Mac mini:</p>
-
-<pre><code># 1. Create the fleet-host user account (a dedicated user, not your personal one)
-#    Recommended: create user "fleet" in System Settings → Users & Groups
-
-# 2. SSH on:
-sudo systemsetup -setremotelogin on
-
-# 3. Tailscale for remote access:
-brew install --cask tailscale
-# Then sign in via the Tailscale menu bar app
-
-# 4. Core toolchain:
-brew install tmux jq git
-curl -fsSL https://bun.sh/install | bash
-
-# 5. Claude Code CLI:
-curl -fsSL https://claude.ai/install.sh | bash
-claude /login   # authenticate this host's user with Anthropic
-
-# 6. GitHub CLI (optional but recommended):
-brew install gh
-gh auth login</code></pre>
-
-<div class="callout ok">
-  <strong>Tip — pin macOS to never sleep</strong>
-  System Settings → Energy → "Prevent computer from sleeping when display is off." Otherwise your fleet quietly disappears at 2am. Also disable auto-update reboots: <code>sudo softwareupdate --schedule off</code>.
-</div>
-
-<h2 id="fleet-state">The fleet state directory layout</h2>
-
-<p>Everything fleet-related lives under <code>~/.claude/</code>:</p>
-
-<pre><code>~/.claude/
-├── channels/                  # one dir per bot identity / channel
-│   ├── slack-analytics/       # the analytics persona's Slack state
-│   │   ├── .env               # SLACK_BOT_TOKEN + SLACK_APP_TOKEN (0600)
-│   │   ├── access.json        # allowed channels, per-user grants
-│   │   ├── dm-users.json      # per-Slack-user worker registry
-│   │   ├── inbound-queue/     # Tier 1 → Tier 2 message queue
-│   │   └── bot.pid            # liveness heartbeat
-│   ├── slack-cmo/             # next persona, same shape
-│   ├── slack-cfo/             # ...
-│   └── local-handoff/         # inter-agent message bus
-│       └── inbox/
-│           ├── analytics/
-│           ├── analytics-dm-worker-U6D3CRN85/
-│           └── ...
-├── plugins/local/             # custom MCP plugins (slack-fork, local-handoff)
-├── prompts/                   # per-persona system prompts
-│   ├── analytics.txt          # public-channel LLM session
-│   ├── analytics-dm-worker.txt # per-user DM worker
-│   ├── cmo.txt
-│   └── ...
-├── bin/                       # daemons + CLIs
-│   ├── analytics-router.ts    # non-LLM Tier 2 daemon
-│   ├── handoff.sh             # inter-agent relay
-│   └── slack-dm-cleanup.ts    # one-offs
-└── settings.json              # global Claude Code config</code></pre>
-
-<p>The pattern is regular: each persona gets its own <code>~/.claude/channels/slack-&lt;persona&gt;/</code> with the same five files inside. The plugin code is shared.</p>
-
-<h2 id="anatomy">Anatomy of a single persona</h2>
-
-<p>A complete persona — say "CMO" — consists of these pieces, each takeable from the analytics template:</p>
-
-<ol>
-  <li><strong>Slack app:</strong> A registered Slack app at <code>api.slack.com/apps</code> with Socket Mode enabled, <code>im:history</code> + <code>im:write</code> + <code>chat:write</code> + <code>reactions:write</code> scopes, and an app-level token for socket mode. Provides the bot identity, like <code>@BVG Agent - CMO</code>.</li>
-  <li><strong>Channel state dir:</strong> <code>~/.claude/channels/slack-cmo/</code> with <code>.env</code> (the bot's tokens, 0600), <code>access.json</code> (which Slack channels and users it can talk to), and <code>dm-users.json</code> (which Slack users get their own DM worker session).</li>
-  <li><strong>Router daemon:</strong> A copy of <code>analytics-router.ts</code> parameterized for "cmo." Reads <code>~/.claude/channels/slack-cmo/inbound-queue/</code>, dispatches to <code>cmo-dm-worker-&lt;user_id&gt;</code> sessions. LaunchAgent <code>com.bvg.cmo-router</code> with KeepAlive.</li>
-  <li><strong>Public-channel LLM session:</strong> A <code>tmux</code> session named <code>cmo-public</code> running <code>claude --append-system-prompt-file=~/.claude/prompts/cmo.txt</code>. Handles inbound from the persona's public Slack channel.</li>
-  <li><strong>Per-user DM workers:</strong> One tmux session per allowed user, named <code>cmo-dm-worker-&lt;SLACK_USER_ID&gt;</code>. Each running <code>claude --continue --append-system-prompt-file=~/.claude/prompts/cmo-dm-worker.txt</code> with its own cwd at <code>~/cmo-dm-workers/user-&lt;UID&gt;/</code>.</li>
-  <li><strong>Resume aliases in <code>~/.zshrc</code>:</strong> <code>claude-cmo-resume</code> brings up the public session + reconciles workers. <code>claude-cmo-stop</code> tears it down.</li>
-</ol>
-
-<h2 id="slack-bootstrap">Slack app bootstrap (script-driven)</h2>
-
-<p>Slack's App Manifest API lets you create new apps programmatically. The recipe:</p>
-
-<h3>Get an app-configuration token</h3>
-
-<p>This is a one-time setup that requires workspace admin rights. At <code>api.slack.com/authentication/config-tokens</code>, generate an app-configuration token (starts with <code>xoxe.xoxp-</code>). This token can create + modify other Slack apps.</p>
-
-<div class="callout warn">
-  <strong>Sensitive token</strong>
-  The app-config token is workspace-admin-equivalent. Store it in <code>~/.claude/.bootstrap-token</code> with mode 0600. Don't commit it.
-</div>
-
-<h3>Bootstrap script</h3>
-
-<p>Create <code>~/.claude/bin/persona-bootstrap.sh</code>:</p>
-
-<pre><code>#!/usr/bin/env bash
-# Usage: persona-bootstrap.sh &lt;persona_name&gt; &lt;display_name&gt;
-# Example: persona-bootstrap.sh cmo "BVG Agent - CMO"
-set -euo pipefail
-
-PERSONA="$1"
-DISPLAY="$2"
-CONFIG_TOKEN=$(cat ~/.claude/.bootstrap-token)
-
-MANIFEST=$(cat &lt;&lt;EOF
-{
-  "display_information": {
-    "name": "${DISPLAY}",
-    "description": "BVG ${PERSONA} agent — team-facing AI assistant",
-    "background_color": "#1a1a1a"
-  },
-  "features": {
-    "bot_user": {
-      "display_name": "${DISPLAY}",
-      "always_online": true
-    },
-    "app_home": {
-      "messages_tab_enabled": true,
-      "messages_tab_read_only_enabled": false
-    }
-  },
-  "oauth_config": {
-    "scopes": {
-      "bot": [
-        "chat:write",
-        "channels:history",
-        "im:history",
-        "im:read",
-        "im:write",
-        "reactions:write",
-        "users:read"
-      ]
-    }
-  },
-  "settings": {
-    "event_subscriptions": {
-      "bot_events": ["message.im", "app_mention"]
-    },
-    "socket_mode_enabled": true
-  }
-}
-EOF
-)
-
-RESULT=$(curl -s -X POST "https://slack.com/api/apps.manifest.create" \
-  -H "Authorization: Bearer ${CONFIG_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d "{\"manifest\": $(echo "$MANIFEST" | jq -Rs .)}")
-
-APP_ID=$(echo "$RESULT" | jq -r .app_id)
-echo "Created app_id: $APP_ID"
-echo "Next: install to workspace at https://api.slack.com/apps/${APP_ID}/install-on-team"
-echo "Then copy bot token + app token into ~/.claude/channels/slack-${PERSONA}/.env"</code></pre>
-
-<p>Run: <code>bash ~/.claude/bin/persona-bootstrap.sh cmo "BVG Agent - CMO"</code> → outputs an <code>app_id</code>. Then click the install link (Slack requires one human confirmation for workspace install, by design).</p>
-
-<h2 id="dispatcher">The non-LLM router daemon pattern</h2>
-
-<p>The router (Tier 2) is the architectural choice that makes a team-facing fleet sane. It's a small TypeScript daemon, ~600 lines, that:</p>
-
-<ul>
-  <li>Watches a single inbound-queue directory via <code>fs.watch</code> + 2s poll backstop</li>
-  <li>For each inbound: looks up the registry, decides "forward to worker X" vs "reject with refusal"</li>
-  <li>For each worker reply: posts to the right Slack DM channel, threaded correctly</li>
-  <li>Never invokes an LLM. Has no Anthropic API calls. Cannot go rogue.</li>
-</ul>
-
-<p>Key implementation notes from production:</p>
-
-<ul>
-  <li><strong>FIFO queue per worker.</strong> Workers reply via <code>handoff.sh</code> which doesn't preserve the inbound's <code>audit_id</code>. So you can't key the reply-context map on <code>audit_id</code>. Maintain a per-worker FIFO of pending forward contexts; each worker reply pops the oldest. Workers process events serially, so FIFO is a sound proxy for "this reply is for the earliest unfulfilled forward."</li>
-  <li><strong>Content-hash dedup.</strong> Workers (especially Sonnet) sometimes call <code>handoff.sh</code> two or three times "to verify it worked." Dedup against the body content, not audit_id, within a 60-second window.</li>
-  <li><strong>Defensive threading.</strong> Slack DMs expect threaded replies. If the operator's inbound was a top-level message, use its <code>ts</code> as the new <code>thread_ts</code> for the bot's reply (creates a new thread under that message). If the inbound was already a thread reply, inherit the parent <code>thread_ts</code>.</li>
-  <li><strong>LaunchAgent with <code>KeepAlive: true</code> and <code>ThrottleInterval: 30</code>.</strong> If the daemon dies, macOS restarts it within 30 seconds. The 30-second floor prevents crashloops from spamming logs.</li>
-</ul>
-
-<h2 id="permissions">Permissions and security model</h2>
-
-<p>Two boundaries to think about:</p>
-
-<h3>Per-Slack-user access</h3>
-
-<p>The <code>dm-users.json</code> registry is the allowlist. Users not in it get a polite refusal:</p>
-
-<pre><code>{
-  "users": {
-    "U0286CPMP": { "name": "Albert", "model": "claude-sonnet-4-6" },
-    "U6DRS8QG6": { "name": "Ryan",   "model": "claude-sonnet-4-6" }
-  }
-}</code></pre>
-
-<p>The router daemon checks this on every inbound. To add a user: edit the file, no restart needed (daemon re-reads on each event).</p>
-
-<h3>Per-action grants on the public channel</h3>
-
-<p>The persona's public Slack channel uses a separate <code>access.json</code> with per-user action grants. The operator gets <code>freeform</code> (trusted passthrough), everyone else gets <code>report</code> (untrusted submission, surfaces as a contained framed event the LLM can log but won't act on without operator confirmation).</p>
-
-<pre><code>{
-  "allowedChannels": ["C0B57B5RG6N"],
-  "users": {
-    "U6D3CRN85": ["freeform"]
-  },
-  "defaultActions": ["report"],
-  "implicitAction": "report"
-}</code></pre>
-
-<h3>What the LLM cannot do autonomously</h3>
-
-<p>Two operator-only invariants enforced by both prompt and tooling:</p>
-
-<ol>
-  <li><strong>No autonomous infra changes.</strong> Agents never swap tokens, edit <code>.env</code> files, modify <code>access.json</code>, or change MCP bindings. They diagnose problems and present options; the operator decides.</li>
-  <li><strong>Destructive actions need trusted-channel confirmation.</strong> Anything irreversible (DB writes, deletes, force-pushes, fleet config changes) requested via Slack must be confirmed by the operator on a separate trusted surface — usually Telegram DM to a dedicated ops bot.</li>
-</ol>
-
-<h2 id="operations">Operations: starting, stopping, observing</h2>
-
-<h3>Bring the whole fleet up after reboot</h3>
-
-<pre><code># A single command via ~/.claude/bin/fleet-startup.sh
-~/.claude/bin/fleet-startup.sh
-
-# Which does:
-#   pm2 resurrect                   # restores any pm2-managed processes
-#   claude-analytics-resume         # public channel LLM session
-#   claude-analytics-dm-restore-workers   # all per-user workers
-#   claude-cmo-resume + workers
-#   ...
-#   launchctl loads the LaunchAgents (already auto-load on reboot)</code></pre>
-
-<h3>Observe live state</h3>
-
-<pre><code># All tmux sessions
-tmux ls
-
-# Attach to a specific session
-tmux attach -t analytics-public
-tmux attach -t analytics-dm-worker-U6D3CRN85
-
-# Detach (don't kill) with: Ctrl-b d
-
-# Tail the router daemon log
-tail -f ~/.claude/analytics-router.log
-
-# Check LaunchAgents
-launchctl list | grep com.bvg</code></pre>
-
-<h3>SSH from your laptop</h3>
-
-<pre><code># With Tailscale set up on both ends:
-ssh fleet@&lt;fleet-host-tailnet-name&gt;
-
-# Then once on the host:
-tmux attach -t analytics-public</code></pre>
-
-<h2 id="failure-modes">Common failure modes</h2>
-
-<table>
-  <tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr>
+  <tr><th>Concern</th><th>Why this matters</th></tr>
   <tr>
-    <td>Bot gets 👀 on a DM but never replies</td>
-    <td>slack-fork plugin running inert (missing token, wrong state dir)</td>
-    <td>Check <code>SLACK_STATE_DIR</code> env in the launching alias. Verify <code>.env</code> contains <code>SLACK_BOT_TOKEN</code> and <code>SLACK_APP_TOKEN</code>.</td>
+    <td><strong>Always-on</strong></td>
+    <td>Team members can't have their bots disappear when you close your laptop or commute. A dedicated host plugged into power + Ethernet is the bare minimum.</td>
   </tr>
   <tr>
-    <td>Bot DM gets multiple identical replies</td>
-    <td>Worker LLM calling <code>handoff.sh</code> multiple times "to verify"</td>
-    <td>Tighten worker prompt with explicit "one inbound = one reply" rule + daemon-side content-hash dedup.</td>
+    <td><strong>Resource contention</strong></td>
+    <td>Each Claude session uses ~1–2 GB of RAM. Six personas × ~5 active workers each is 30+ sessions. Your laptop slows down; the fleet host is sized for it.</td>
   </tr>
   <tr>
-    <td>Reply lands at top-level instead of threaded</td>
-    <td>Daemon's reply-context lookup failing (most likely keyed on <code>audit_id</code> which is "0" under <code>--audit-via=none</code>)</td>
-    <td>Use FIFO per-worker matching, not audit_id keying.</td>
+    <td><strong>Identity clarity</strong></td>
+    <td>Bots running from "stojan's mac" look personal. Bots running from "BVG Agent Host" read as company infrastructure for compliance + audit.</td>
   </tr>
   <tr>
-    <td>Plugin process alive but no Slack TCP connection</td>
-    <td>Plugin started in inert mode (silent stderr-only warning)</td>
-    <td><code>lsof -p &lt;pid&gt; | grep TCP</code> — if no ESTABLISHED https connection, the plugin loaded without tokens. Check env.</td>
-  </tr>
-  <tr>
-    <td>"channel_not_found" errors on chat.postMessage</td>
-    <td>Bot lacks <code>im:write</code> scope OR not invited to channel</td>
-    <td>Slack app config → OAuth & Permissions → add scope → reinstall.</td>
-  </tr>
-  <tr>
-    <td>Worker tmux fills with dialog prompts</td>
-    <td>First-boot folder-trust / dev-channels / MCP-server dialogs need dismissing</td>
-    <td>Run a single shared umbrella daemon that polls all tmux sessions and dismisses known dialogs. <code>tmux send-keys</code> with the right key sequences.</td>
+    <td><strong>Config separation</strong></td>
+    <td>Your shell history, your Claude Code defaults, your environment — these are your workspace. The fleet host should be its own thing.</td>
   </tr>
 </table>
 
-<h2 id="adding-personas">Recipe: adding a new persona in 30 minutes</h2>
+<h2>What the user sees</h2>
 
-<p>Once the host is set up, adding "CMO" is mechanical:</p>
+<p>Just Slack. Someone on the marketing team DMs <code>@BVG Agent - CMO</code> with a question. The bot responds in their DM, threaded under the question. Conversations persist across days — the user can ask follow-ups weeks later and the agent remembers context.</p>
+
+<p>From the team's perspective: it's an always-available colleague who knows their function's data and tools. No new app to install, no new login, no integration burden. Just Slack.</p>
+
+<h2>What the operator does</h2>
+
+<p>After the initial setup (Phase 1 + Phase 2), the operator's day-to-day workload is light:</p>
+
+<ul>
+  <li><strong>Add new team members</strong> to a persona's allowlist (edit one JSON file, no restart needed)</li>
+  <li><strong>Tune prompts</strong> based on real feedback ("the bot is too verbose," "needs to default to summarizing first")</li>
+  <li><strong>Add new personas</strong> as new functions ask for one (~30 min per persona)</li>
+  <li><strong>Monitor</strong> via Telegram DM to a dedicated ops bot — the operator's audit + control channel separate from team-facing surfaces</li>
+</ul>
+
+<p>The fleet doesn't need babysitting. macOS LaunchAgents restart anything that crashes. Log rotation handles disk growth. The operator gets pinged on Telegram only when something needs decision-making.</p>
+
+<h2>Security model</h2>
+
+<p>Two invariants enforced by code, not by trust:</p>
 
 <ol>
-  <li><strong>(5 min) Bootstrap the Slack app:</strong> <code>bash ~/.claude/bin/persona-bootstrap.sh cmo "BVG Agent - CMO"</code> → click the install link → copy tokens.</li>
-  <li><strong>(2 min) Create state dir:</strong> <code>mkdir -p ~/.claude/channels/slack-cmo && cd $_ && touch .env access.json dm-users.json && chmod 600 *</code> Populate <code>.env</code> with the tokens.</li>
-  <li><strong>(3 min) Configure access:</strong> Edit <code>access.json</code> with the public channel ID + operator grant. Edit <code>dm-users.json</code> with the team members who can DM this persona.</li>
-  <li><strong>(5 min) Write the prompt:</strong> Copy <code>~/.claude/prompts/analytics.txt</code> to <code>cmo.txt</code> + <code>analytics-dm-worker.txt</code> to <code>cmo-dm-worker.txt</code>. Edit the persona-specific scope sections.</li>
-  <li><strong>(5 min) Add resume aliases:</strong> Copy the analytics block in <code>~/.zshrc</code> as a starting point for <code>claude-cmo-resume</code> + <code>claude-cmo-dm-restore-workers</code>. <code>sed</code>-replace "analytics" → "cmo." Mind the model pin: <code>--model claude-opus-4-8</code> for the public-channel LLM.</li>
-  <li><strong>(5 min) Spawn the router daemon:</strong> Copy <code>~/.claude/bin/analytics-router.ts</code> to <code>cmo-router.ts</code>, replace the state-dir constant. Copy the LaunchAgent plist to <code>com.bvg.cmo-router.plist</code>. <code>launchctl load</code> it.</li>
-  <li><strong>(5 min) Test end-to-end:</strong> DM <code>@BVG Agent - CMO</code> from an allowlisted user. Verify daemon log shows FORWARDED → worker pane shows local-handoff inbound → daemon log shows RELAYED → reply lands in Slack.</li>
+  <li><strong>No autonomous infrastructure changes.</strong> Agents diagnose problems and present options. They never swap tokens, edit access lists, or modify their own configs. The operator decides every infra-level change.</li>
+  <li><strong>Destructive actions require trusted-channel confirmation.</strong> If someone in a public Slack channel asks the bot to delete data or push code, the bot logs the request and asks the operator via Telegram before doing anything. The operator's Telegram DM is the only "trusted" surface for irreversible actions.</li>
 </ol>
 
-<p>If step 7 fails, the diagnostics dance is well-trodden: <code>lsof -p</code> on the plugin (confirm TCP connection), <code>tail -f</code> the router log (confirm queue write), check <code>tmux capture-pane</code> on the worker (confirm dialog dismissal + event arrival).</p>
+<p>Per-Slack-user allowlists prevent randoms in the workspace from DMing the bot to fish for information. The allowlist is a single JSON file the operator edits; no UI, no approval flow.</p>
 
-<div class="callout ok">
-  <strong>End-state</strong>
-  Once a persona is running smoothly, the operator forgets about it. Team members DM <code>@BVG Agent - CMO</code> like they'd DM a colleague; the bot routes to their per-user worker; the worker responds. The Mac mini quietly serves the team. No babysitting.
+<h2>Cost</h2>
+
+<table>
+  <tr><th>Item</th><th>One-time</th><th>Ongoing</th></tr>
+  <tr><td>Mac mini M4 (16–24 GB RAM)</td><td>$600–1500</td><td>—</td></tr>
+  <tr><td>Tailscale (personal plan)</td><td>—</td><td>$0/mo</td></tr>
+  <tr><td>Claude Max subscription</td><td>—</td><td>$100/mo (per host user)</td></tr>
+  <tr><td>Electricity (~10W idle, ~30W under load)</td><td>—</td><td>~$3/mo</td></tr>
+  <tr><td>Operator time (setup)</td><td>~6 hours</td><td>—</td></tr>
+  <tr><td>Operator time (ongoing)</td><td>—</td><td>~1 hour/week</td></tr>
+</table>
+
+<p>For 6 personas serving a team of ~25 people, the marginal cost per persona is essentially the operator's setup time. Each persona shares the same Claude subscription, the same host, the same tooling.</p>
+
+<h2>Get started</h2>
+
+<div class="cta-row">
+  <a href="detail.html" class="btn btn-primary">Read the full build guide →</a>
+  <a href="https://github.com/madjunkov/team-fleet-guide" class="btn btn-secondary">Source on GitHub</a>
 </div>
+
+<p>The build guide covers every step: hardware sizing, first-boot prereqs, the Slack app bootstrap script, the router daemon implementation, common failure modes, and the 30-minute persona-add recipe. Lessons distilled from a production 6-persona fleet.</p>
 
 <div class="footer">
   Source repo: <a href="https://github.com/madjunkov/team-fleet-guide">github.com/madjunkov/team-fleet-guide</a><br>
-  Generated 2026-06-10. Based on production lessons from the BVG agent fleet.
+  Based on production lessons from the BVG agent fleet. Generated 2026-06-10.
 </div>
 
 </body>
